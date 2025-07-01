@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send, Bot, User, Settings } from 'lucide-react';
+import { MessageCircle, Send, Bot, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Message {
@@ -25,8 +25,6 @@ const ChatBot = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini-api-key') || '');
-  const [showApiKeyInput, setShowApiKeyInput] = useState(!apiKey);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -38,29 +36,8 @@ const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('gemini-api-key', apiKey);
-      setShowApiKeyInput(false);
-      toast({
-        title: "API 키가 저장되었어요! ✨",
-        description: "이제 AI 도우미와 대화할 수 있습니다.",
-      });
-    }
-  };
-
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
-
-    if (!apiKey) {
-      toast({
-        title: "API 키가 필요해요 🔑",
-        description: "Gemini API 키를 먼저 설정해주세요.",
-        variant: "destructive",
-      });
-      setShowApiKeyInput(true);
-      return;
-    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -73,52 +50,28 @@ const ChatBot = () => {
     setInputValue('');
     setIsLoading(true);
 
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `당신은 DeepFocus 앱의 친근한 AI 도우미입니다. 사용자의 스마트폰 사용 습관 개선을 도와주는 역할을 합니다. 다음 메시지에 친근하고 도움이 되는 답변을 해주세요: ${inputValue}`
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('API 요청에 실패했습니다');
-      }
-
-      const data = await response.json();
-      const aiResponse = data.candidates[0]?.content?.parts[0]?.text || '죄송해요, 응답을 생성할 수 없었어요 😅';
-
+    // 간단한 응답 시뮬레이션
+    setTimeout(() => {
+      const responses = [
+        '좋은 질문이에요! 스마트폰 사용 습관을 개선하려면 우선 본인의 사용 패턴을 파악하는 것이 중요해요. DeepFocus가 도와드릴게요! 📱✨',
+        '건강한 디지털 습관을 만들어가는 것은 정말 중요해요. 작은 변화부터 시작해보세요. 함께 노력해봐요! 💪😊',
+        '보행 중 스마트폰 사용은 안전상 정말 위험할 수 있어요. DeepFocus의 보행 감지 기능으로 더 안전하게 다닐 수 있을 거예요! 🚶‍♀️📱',
+        '수면 전 스마트폰 사용을 줄이면 더 깊고 편안한 잠을 잘 수 있어요. 수면 모드 설정을 활용해보세요! 😴🌙',
+        '꾸준히 실천하는 것이 가장 중요해요. 목표를 작게 설정하고 하나씩 달성해나가세요. 저도 응원할게요! 🎯💫'
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: aiResponse,
+        text: randomResponse,
         isUser: false,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
-    } catch (error) {
-      console.error('AI 응답 오류:', error);
-      toast({
-        title: "응답을 받을 수 없어요 😥",
-        description: "잠시 후 다시 시도해주세요.",
-        variant: "destructive",
-      });
-    } finally {
       setIsLoading(false);
-    }
+    }, 1000 + Math.random() * 1000); // 1-2초 랜덤 딜레이
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -128,59 +81,13 @@ const ChatBot = () => {
     }
   };
 
-  if (showApiKeyInput) {
-    return (
-      <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-            <Settings className="h-5 w-5 text-blue-500" />
-            AI 도우미 설정
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              AI 도우미와 대화하려면 Gemini API 키가 필요해요! 🤖
-            </p>
-            <Input
-              type="password"
-              placeholder="Gemini API 키를 입력해주세요"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="mb-3"
-            />
-            <div className="flex gap-2">
-              <Button onClick={saveApiKey} className="flex-1">
-                저장하기
-              </Button>
-              {apiKey && (
-                <Button variant="outline" onClick={() => setShowApiKeyInput(false)}>
-                  취소
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-            <MessageCircle className="h-5 w-5 text-blue-500" />
-            AI 도우미와 대화하기
-          </CardTitle>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowApiKeyInput(true)}
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
-        </div>
+        <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+          <MessageCircle className="h-5 w-5 text-blue-500" />
+          AI 도우미와 대화하기
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
