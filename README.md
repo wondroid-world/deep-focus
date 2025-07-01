@@ -1,73 +1,50 @@
-# Welcome to your Lovable project
+ 서비스명: DeepFocus
+“걷거나 누워 있을 때 스마트폰 사용을 줄여주는 집중 습관 앱”
 
-## Project info
+🎯 서비스 목적
+사용자가 보행 중 또는 누운 자세에서 무의식적으로 스마트폰을 과도하게 사용하는 상황을 감지하고,
+경고·제한 기능을 통해 더 안전하고 건강한 디지털 습관을 유도합니다.
+또한, 사용자 스스로 자신의 사용 패턴을 시각적 통계 및 피드백을 통해 인식하고 개선할 수 있도록 돕습니다.
 
-**URL**: https://lovable.dev/projects/ae30ea08-febc-4c61-977e-75f5e02afe2a
+👤 주요 사용자 시나리오
+1. 🚶 보행 중 스마트폰 사용
+출퇴근길이나 이동 중에 스마트폰을 사용하는 사용자
 
-## How can I edit this code?
+걷는 동작 중 스마트폰 화면이 켜지면, 알림 또는 화면 흐림 처리를 통해 사용 제한 유도
 
-There are several ways of editing your application.
+2. 🛌 잠자리에서의 과도한 사용
+취침 전 누운 자세에서 영상·SNS 소비가 습관화된 사용자
 
-**Use Lovable**
+누운 상태에서 일정 시간 사용 시, 주의 메시지 및 화면 제한
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ae30ea08-febc-4c61-977e-75f5e02afe2a) and start prompting.
+3. 📊 습관 개선을 원하는 사용자
+나의 스마트폰 사용 습관을 확인하고 개선하고 싶은 사용자
 
-Changes made via Lovable will be committed automatically to this repo.
+일간/주간 리포트, 목표 설정, 달성 피드백 등을 통해 자기인식 강화
 
-**Use your preferred IDE**
+🧩 핵심 기능 요구사항
+기능 영역	상세 설명
+1. 행동 감지	- 가속도계 / 자이로스코프 기반으로 ‘보행’ 및 ‘누운 자세’ 감지
+- 정확도 90% 이상 목표
+2. 사용 상태 감지	- 화면 ON/OFF 상태, 활성 앱 추적
+- (선택적으로) 사용 중인 앱 종류 식별
+3. 알림 및 제한	- 감지된 상태에서 일정 시간 이상 사용 시 팝업, 진동, 사운드 등으로 경고
+- 사용자 설정에 따라 일시적 앱 차단 또는 흐림 효과 적용
+4. 맞춤 설정 기능	- 시간대별 감지 활성화 설정 (예: 수면 모드: 22시~07시)
+- 예외 앱 등록 기능 (예: 전화, 지도)
+- 알림 빈도 및 형식 선택 가능
+5. 리포트 및 피드백	- 일간/주간/월간 통계 제공
+- 걷기/누운 자세 중 사용 시간 시각화
+- 목표 설정 및 달성률에 따른 긍정적 피드백 제공
+6. 챗봇 연동 (선택적)	- Gemini 2.5 Flash API 연동
+- 사용자가 직접 API Key를 입력하고 챗봇과 대화할 수 있는 UI 제공
+7. 개인정보 보호	- 센서 데이터는 로컬 기기에서만 처리
+- 서버 전송은 사용자 동의 하에만 수행
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+🧠 에지 케이스 고려사항
+걷기 운동, 러닝 시 오탐 방지 → ‘운동 모드’ 예외 처리
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+휴대폰을 들고 누운 자세가 아닌 경우는 감지하지 않도록 각도 + 시간 기준 병합
 
-Follow these steps:
+앱 강제 종료 대비 → 백그라운드 서비스 지속 및 주기적 리마인더 제공
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ae30ea08-febc-4c61-977e-75f5e02afe2a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
