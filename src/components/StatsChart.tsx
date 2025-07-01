@@ -15,14 +15,16 @@ const StatsChart = ({ data }: StatsChartProps) => {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" className="dark:stroke-gray-600" />
           <XAxis 
             dataKey="day" 
             stroke="#6b7280"
+            className="dark:stroke-gray-400"
             fontSize={12}
           />
           <YAxis 
             stroke="#6b7280"
+            className="dark:stroke-gray-400"
             fontSize={12}
             label={{ value: '사용 시간 (분)', angle: -90, position: 'insideLeft' }}
           />
@@ -35,11 +37,11 @@ const StatsChart = ({ data }: StatsChartProps) => {
             }}
             formatter={(value: number, name: string) => [
               `${value}분`,
-              name === 'walking' ? '보행 중' : '침대에서'
+              name === 'walking' ? '보행 중 사용' : '침대에서 사용'
             ]}
           />
           <Legend 
-            formatter={(value) => value === 'walking' ? '보행 중 사용' : '침대에서 사용'}
+            formatter={(value) => value === 'walking' ? '보행 중 사용 🚶‍♀️' : '침대에서 사용 🛏️'}
           />
           <Bar 
             dataKey="walking" 
