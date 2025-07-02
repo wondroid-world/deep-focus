@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -9,9 +9,23 @@ import { useTheme } from '@/contexts/ThemeContext';
 import StatsChart from '@/components/StatsChart';
 import QuickActions from '@/components/QuickActions';
 import ChatBot from '@/components/ChatBot';
+import StatsPeriodSelector from '@/components/StatsPeriodSelector';
+import AIAnalysis from '@/components/AIAnalysis';
+import ReminderHistory from '@/components/ReminderHistory';
+import QuickSettings from '@/components/QuickSettings';
 
 const Dashboard = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('week');
+  
+  // Quick Settings State
+  const [quickSettings, setQuickSettings] = useState({
+    walkingDetection: true,
+    lyingDetection: true,
+    exerciseMode: false,
+    walkingSensitivity: 70,
+    lyingSensitivity: 60,
+  });
   
   // Mock data for demonstration
   const todayStats = {
@@ -21,15 +35,44 @@ const Dashboard = () => {
     goalProgress: 65 // percentage
   };
 
-  const weeklyData = [
-    { day: '월', walking: 30, lying: 90 },
-    { day: '화', walking: 45, lying: 110 },
-    { day: '수', walking: 25, lying: 85 },
-    { day: '목', walking: 40, lying: 95 },
-    { day: '금', walking: 35, lying: 120 },
-    { day: '토', walking: 55, lying: 140 },
-    { day: '일', walking: 45, lying: 120 }
-  ];
+  const generateMockData = (period: 'week' | 'month' | 'quarter' | 'year') => {
+    const dataPoints = {
+      week: 7,
+      month: 30,
+      quarter: 90,
+      year: 365
+    };
+    
+    const labels = {
+      week: ['월', '화', '수', '목', '금', '토', '일'],
+      month: Array.from({length: 30}, (_, i) => `${i + 1}일`),
+      quarter: Array.from({length: 90}, (_, i) => `${Math.floor(i / 30) + 1}월`),
+      year: Array.from({length: 12}, (_, i) => `${i + 1}월`)
+    };
+    
+    const count = dataPoints[period];
+    const periodLabels = labels[period];
+    
+    if (period === 'week') {
+      return [
+        { day: '월', walking: 30, lying: 90 },
+        { day: '화', walking: 45, lying: 110 },
+        { day: '수', walking: 25, lying: 85 },
+        { day: '목', walking: 40, lying: 95 },
+        { day: '금', walking: 35, lying: 120 },
+        { day: '토', walking: 55, lying: 140 },
+        { day: '일', walking: 45, lying: 120 }
+      ];
+    }
+    
+    return Array.from({ length: Math.min(count, periodLabels.length) }, (_, i) => ({
+      day: periodLabels[i] || `${i + 1}`,
+      walking: Math.floor(Math.random() * 60) + 20,
+      lying: Math.floor(Math.random() * 100) + 60
+    }));
+  };
+
+  const currentData = generateMockData(selectedPeriod);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors">
@@ -50,6 +93,30 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">DeepFocus</h1>
           <p className="text-gray-600 dark:text-gray-400">건강한 디지털 습관을 만들어가는 여정 🌱</p>
         </div>
+
+        {/* Quick Settings - 메인 화면에서 바로 접근 */}
+        <QuickSettings
+          walkingDetection={quickSettings.walkingDetection}
+          lyingDetection={quickSettings.lyingDetection}
+          exerciseMode={quickSettings.exerciseMode}
+          walkingSensitivity={quickSettings.walkingSensitivity}
+          lyingSensitivity={quickSettings.lyingSensitivity}
+          onWalkingDetectionChange={(value) => 
+            setQuickSettings(prev => ({ ...prev, walkingDetection: value }))
+          }
+          onLyingDetectionChange={(value) => 
+            setQuickSettings(prev => ({ ...prev, lyingDetection: value }))
+          }
+          onExerciseModeChange={(value) => 
+            setQuickSettings(prev => ({ ...prev, exerciseMode: value }))
+          }
+          onWalkingSensitivityChange={(value) => 
+            setQuickSettings(prev => ({ ...prev, walkingSensitivity: value[0] }))
+          }
+          onLyingSensitivityChange={(value) => 
+            setQuickSettings(prev => ({ ...prev, lyingSensitivity: value[0] }))
+          }
+        />
 
         {/* Quick Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -98,15 +165,27 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Weekly Chart */}
+        {/* Statistics Chart with Period Selector */}
         <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200">주간 사용 패턴 📊</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200">사용 패턴 분석 📊</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <StatsChart data={weeklyData} />
+            <StatsPeriodSelector 
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+            />
+            <StatsChart data={currentData} />
           </CardContent>
         </Card>
+
+        {/* AI Analysis */}
+        <AIAnalysis data={currentData} period={selectedPeriod} />
+
+        {/* Reminder History */}
+        <ReminderHistory />
 
         {/* Quick Actions */}
         <QuickActions />
