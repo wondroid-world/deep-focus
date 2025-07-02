@@ -125,3 +125,7 @@ url: https://walk-sleep-smart-free.lovable.app/
 앱 강제 종료 대비 → 백그라운드 서비스 지속 및 주기적 리마인더 제공
 
 <img width="493" alt="image" src="https://github.com/user-attachments/assets/cf681bb5-1cde-4a33-b0df-9d1e47d7a91e" />
+
+## 개선된 UI
+<img width="357" alt="image" src="https://github.com/user-attachments/assets/41ea7078-5903-442b-99cf-c8b8fd2db79a" />
+
